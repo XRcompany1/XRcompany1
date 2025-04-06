@@ -1,0 +1,143 @@
+<h1> Game Section </h1>
+
+<section>
+<li> <b>Rock paper sissor</b> </li>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website with Rock Paper Scissors</title>
+  <style>
+    /* Basic Styles for the Website */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .content {
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    /* Styles for Rock Paper Scissors Game */
+    .game-container {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      bottom: 20px; /* Position the game at the bottom */
+      left: 50%;
+      transform: translateX(-50%); /* Center the game horizontally */
+      z-index: 10; /* Make sure it stays on top of other content */
+    }
+    .game-container h1 {
+      margin-bottom: 20px;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    .buttons button {
+      padding: 20px;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    .buttons button:hover {
+      background-color: #2980b9;
+    }
+    .result {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .choices {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main Content of the Website -->
+  <div class="content">
+    <h1>Welcome to My Website!</h1>
+    <p>Explore our various content and enjoy the game below!</p>
+  </div>
+
+  <!-- Rock Paper Scissors Game Container -->
+  <div class="game-container">
+    <h1>Rock Paper Scissors</h1>
+    <div class="buttons">
+      <button id="rock">Rock</button>
+      <button id="paper">Paper</button>
+      <button id="scissors">Scissors</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <script>
+    // Possible choices
+    const choices = ["rock", "paper", "scissors"];
+
+    // Get buttons and result div
+    const rockButton = document.getElementById("rock");
+    const paperButton = document.getElementById("paper");
+    const scissorsButton = document.getElementById("scissors");
+    const resultDiv = document.getElementById("result");
+    const choicesDiv = document.getElementById("choices");
+
+    // Function to get the computer's choice
+    function getComputerChoice() {
+      const randomIndex = Math.floor(Math.random() * 3);
+      return choices[randomIndex];
+    }
+
+    // Function to determine the winner
+    function determineWinner(playerChoice, computerChoice) {
+      if (playerChoice === computerChoice) {
+        return "It's a tie!";
+      } else if (
+        (playerChoice === "rock" && computerChoice === "scissors") ||
+        (playerChoice === "scissors" && computerChoice === "paper") ||
+        (playerChoice === "paper" && computerChoice === "rock")
+      ) {
+        return "You win!";
+      } else {
+        return "You lose!";
+      }
+    }
+
+    // Function to handle player's choice
+    function playGame(playerChoice) {
+      const computerChoice = getComputerChoice();
+      const result = determineWinner(playerChoice, computerChoice);
+      resultDiv.textContent = result;
+      choicesDiv.textContent = `You chose ${playerChoice}, Computer chose ${computerChoice}.`;
+    }
+
+    // Event listeners for buttons
+    rockButton.addEventListener("click", () => playGame("rock"));
+    paperButton.addEventListener("click", () => playGame("paper"));
+    scissorsButton.addEventListener("click", () => playGame("scissors"));
+  </script>
+</body>
+</html>
+

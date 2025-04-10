@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Falling Fruit Game</title>
+  <style>
+    body {
+      margin: 0;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      background-color: #eef;
+    }
+    canvas {
+      background: #fff;
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #333;
+    }
+    #score {
+      font-size: 24px;
+      margin: 10px;
+    }
+    #controls {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🍓 Falling Fruit Ninja</h1>
+  <div id="controls">
+    <label for="difficulty">Difficulty:</label>
+    <select id="difficulty">
+      <option value="slow">Slow</option>
+      <option value="medium" selected>Medium</option>
+      <option value="fast">Fast</option>
+      <option value="random">Random</option>
+    </select>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+  <div id="score">Score: 0</div>
+  <canvas id="gameCanvas" width="600" height="500"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let items = [];
+    let score = 0;
+    let gameRunning = false;
+    let spawnInterval;
+    const fruitColors = ["red", "orange", "yellow", "purple"];
+    const itemRadius = 20;
+
+    function startGame() {
+      items = [];
+      score = 0;
+      gameRunning = true;
+      document.getElementById("score").innerText = "Score: 0";
+      clearInterval(spawnInterval);
+      spawnItems();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function spawnItems() {
+      const difficulty = document.getElementById("difficulty").value;
+
+      function getInterval() {
+        switch (difficulty) {
+          case "slow": return 1200;
+          case "medium": return 800;
+          case "fast": return 400;
+          case "random": return Math.random() * 800 + 200;
+        }
+      }
+
+      spawnInterval = setInterval(() => {
+        const isBomb = Math.random() < 0.2;
+        items.push({
+          x: Math.random() * (canvas.width - itemRadius * 2) + itemRadius,
+          y: -itemRadius,
+          speedY: Math.random() * 3 + 2,
+          color: isBomb ? "black" : fruitColors[Math.floor(Math.random() * fruitColors.length)],
+          isBomb: isBomb
+        });
+      }, getInterval());
+
+      // refresh interval for "random" mode
+      if (difficulty === "random") {
+        setInterval(() => {
+          clearInterval(spawnInterval);
+          spawnItems();
+        }, 3000);
+      }
+    }
+
+    function updateItems() {
+      items.forEach(item => {
+        item.y += item.speedY;
+      });
+
+      // Remove items that fall out of screen
+      items = items.filter(item => item.y < canvas.height + itemRadius);
+    }
+
+    function drawItems() {
+      items.forEach(item => {
+        ctx.beginPath();
+        ctx.arc(item.x, item.y, itemRadius, 0, Math.PI * 2);
+        ctx.fillStyle = item.color;
+        ctx.fill();
+        ctx.closePath();
+      });
+    }
+
+    canvas.addEventListener("click", (e) => {
+      if (!gameRunning) return;
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+        const dx = item.x - clickX;
+        const dy = item.y - clickY;
+        if (Math.sqrt(dx * dx + dy * dy) < itemRadius) {
+          if (item.isBomb) {
+            endGame();
+            return;
+          } else {
+            score++;
+            document.getElementById("score").innerText = "Score: " + score;
+            items.splice(i, 1);
+            return;
+          }
+        }
+      }
+    });
+
+    function endGame() {
+      gameRunning = false;
+      clearInterval(spawnInterval);
+      alert("💥 You hit a bomb! Final Score: " + score);
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      updateItems();
+      drawItems();
+      requestAnimationFrame(gameLoop);
+    }
+  </script>
+
+</body>
+</html>
